@@ -1,0 +1,215 @@
+const leftUrl = 'https://image.flaticon.com/icons/svg/99/99077.svg';
+const rightUrl = 'https://image.flaticon.com/icons/svg/99/99086.svg';
+const restoreDown = "https://img.icons8.com/windows/32/000000/restore-down.png";
+
+const placeholder =
+`# I am H1
+## I am H2
+### I am H3
+#### I am H4
+##### I am H5
+###### I am H6
+
+1. I am a first ordered list item
+2. I am another item
+3. I am another item.
+
+⋅⋅⋅I am an indented paragraph. 
+
+⋅⋅⋅I am a line break without a paragraph, using two trailing spaces.⋅⋅
+
+* I am an unordered list using asterisks
+- I am an unordered list using minuses
++ I am an unordered list using pluses
+
+[I'm an inline-style link](https://www.google.com)
+
+> I am a blockquote
+
+I am **bold**, with **asterisks** or __underscores__.
+
+I am a table:
+
+1st Header   | 2nd Header  | 3rd Header 
+------------ | ------------- | ------------- 
+I am content   | I am content  | I am content 
+I am content   | I am content  | I am content 
+
+I am inline \`code\` with \`back-ticks\`.
+
+Here comes a Javascript code block using two backticks:
+
+\`\`\`
+// I am multi-line code:
+
+let x = "JavaScript Code!";
+return x;
+
+\`\`\`
+
+I am an inline-style image:
+![alt text](https://github.com/adam-p/markdown-here/raw/master/src/common/images/icon48.png "Logo Title Text 1")
+[logo]: https://github.com/adam-p/markdown-here/raw/master/src/common/images/icon48.png "Logo Title Text 2"
+
+`;
+
+marked.setOptions({
+  breaks: true });
+
+
+class App extends React.Component {
+  constructor() {
+    super();
+    this.state = {
+      text: placeholder,
+      expandLeft: false,
+      expandRight: false };
+
+    this.handleChange = this.handleChange.bind(this);
+    this.handleLeft = this.handleLeft.bind(this);
+    this.handleRight = this.handleRight.bind(this);
+    this.handleRestoreDown = this.handleRestoreDown.bind(this);
+  }
+
+  handleChange() {
+    const { name, value } = event.target;
+    this.setState({ [name]: value });
+  }
+
+  handleLeft() {
+    this.setState({
+      expandLeft: true });
+
+  }
+
+  handleRight() {
+    this.setState({
+      expandRight: true });
+
+  }
+
+
+  handleRestoreDown() {
+    this.setState({
+      expandRight: false,
+      expandLeft: false });
+
+  }
+
+  render() {
+    const editorClass = this.state.expandLeft ?
+    'expandedLeft' : this.state.expandRight ?
+    'expandedRight' :
+    'resize-drag editor-container';
+    const previewClass = this.state.expandLeft ?
+    'expandedRight' : this.state.expandRight ?
+    'expandedLeft' :
+    'resize-drag preview-container';
+
+    return (
+      React.createElement("div", { class: "container" },
+
+      React.createElement("div", { id: "editor-container", className: editorClass },
+      React.createElement("div", { id: "editor-header" },
+      React.createElement("img", { src: rightUrl,
+        onClick: this.handleRight }),
+      React.createElement("img", { src: restoreDown,
+        onClick: this.handleRestoreDown }),
+      React.createElement("img", { src: leftUrl,
+        onClick: this.handleLeft }),
+      React.createElement("h1", null, "Editor: ")),
+
+      React.createElement("textarea", { id: "editor",
+        value: this.state.text,
+        name: "text",
+        placeholder: placeholder,
+        onChange: this.handleChange })),
+
+
+
+      React.createElement("div", { id: "preview-container", className: previewClass },
+      React.createElement("div", { id: "preview-header" },
+      React.createElement("img", { src: rightUrl,
+        onClick: this.handleRight }),
+      React.createElement("img", { src: restoreDown,
+        onClick: this.handleRestoreDown }),
+      React.createElement("img", { src: leftUrl,
+        onClick: this.handleLeft }),
+      React.createElement("h1", null, "Preview: ")),
+
+      React.createElement("div", { id: "preview",
+        dangerouslySetInnerHTML: { __html: marked(this.state.text) } }))));
+
+
+
+
+
+  }}
+
+
+ReactDOM.render(React.createElement(App, null), document.getElementById("root"));
+
+function dragMoveListener(event) {
+  var target = event.target,
+  // keep the dragged position in the data-x/data-y attributes
+  x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx,
+  y = (parseFloat(target.getAttribute('data-y')) || 0) + event.dy;
+
+  // translate the element
+  target.style.webkitTransform =
+  target.style.transform =
+  'translate(' + x + 'px, ' + y + 'px)';
+
+  // update the posiion attributes
+  target.setAttribute('data-x', x);
+  target.setAttribute('data-y', y);
+}
+
+interact('.resize-drag').
+draggable({
+  onmove: window.dragMoveListener,
+  restrict: {
+    restriction: 'parent',
+    elementRect: { top: 1, left: 1, bottom: 1, right: 1 } } }).
+
+
+resizable({
+  // resize from all edges and corners
+  edges: { left: true, right: true, bottom: true, top: true },
+
+  //keep aspectratio
+  preserveAspectRatio: true,
+
+  // keep the edges inside the parent
+  restrictEdges: {
+    outer: 'parent',
+    endOnly: true },
+
+
+  // minimum size
+  restrictSize: {
+    min: { width: 100, height: 50 } },
+
+
+  inertia: true }).
+
+
+on('resizemove', function (event) {
+  var target = event.target,
+  x = parseFloat(target.getAttribute('data-x')) || 0,
+  y = parseFloat(target.getAttribute('data-y')) || 0;
+
+  // update the element's style
+  target.style.width = event.rect.width + 'px';
+  target.style.height = event.rect.height + 'px';
+
+  // translate when resizing from top or left edges
+  x += event.deltaRect.left;
+  y += event.deltaRect.top;
+
+  target.style.webkitTransform = target.style.transform =
+  'translate(' + x + 'px,' + y + 'px)';
+
+  target.setAttribute('data-x', x);
+  target.setAttribute('data-y', y);
+});
