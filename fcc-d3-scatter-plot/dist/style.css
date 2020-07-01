@@ -1,3 +1,16 @@
+body{
+  background-color: #DCDCDC;  
+}
+
+#graphContainer {
+  margin: auto;
+  width: 700px;
+  padding: 20px;
+  background-color: whitesmoke;
+  border: solid 1px black;
+  box-shadow: 1px 1px 10px;
+}
+
 #title {
   text-align: center;
   font: 30px sans-serif;	
@@ -9,7 +22,7 @@
 }
 
 #dataContainer {
-   text-align: center;
+  text-align: center;
 }
 
 div.tooltip {	
