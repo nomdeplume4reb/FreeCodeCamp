@@ -1,0 +1,242 @@
+/* 
+1. When a countdown reaches zero (NOTE: timer MUST reach 00:00), a sound indicating that time is up should play. This should utilize an HTML5 <audio> tag and have a corresponding id="beep".
+2. The audio element with id="beep" must be 1 second or longer.
+*/
+
+let url = 'http://soundbible.com/grab.php?id=535&type=mp3';
+let playPauseIcon = 'https://cdn2.iconfinder.com/data/icons/media-controls-7/24/icon-media-controls-play-pause-512.png';
+let timeLeftColor = '#20B2AA';
+let warningColor = '#FF1493';
+
+class App extends React.Component {
+  constructor() {
+    super();
+    this.state = {
+      break: 5,
+      session: 25,
+      minutes: 25,
+      seconds: 0,
+      active: false,
+      label: 'Session',
+      alarmColor: { color: timeLeftColor } };
+
+    this.addClick = this.addClick.bind(this);
+    this.subtractClick = this.subtractClick.bind(this);
+    this.resetClock = this.resetClock.bind(this);
+    this.tick = this.tick.bind(this);
+    this.handleStartStop = this.handleStartStop.bind(this);
+    this.playAlarm = this.playAlarm.bind(this);
+  }
+
+  componentDidMount() {
+    let intervalID = setInterval(
+    () => this.tick(),
+    1000);
+
+  }
+
+  componentWillUnmount() {
+    clearInterval(intervalID);
+  }
+
+  tick() {
+    //starts countdown for session:
+    if (this.state.active === true && this.state.label === 'Session') {
+      //countdown of seconds:
+      if (this.state.seconds < 60 && this.state.seconds >= 0) {
+        this.setState({
+          seconds: this.state.seconds - 1 });
+
+      } // coundown of minutes:
+      if (this.state.seconds === -1 && this.state.minutes !== 0) {
+        this.setState({
+          seconds: 59,
+          minutes: this.state.minutes - 1 });
+
+      } // switches to break at 0min 0sec:
+      if (this.state.seconds === -1 && this.state.minutes === 0) {
+        this.setState({
+          label: 'Break',
+          minutes: this.state.break,
+          seconds: 1 });
+
+      } //plays alarm at 0min 0sec:
+      if (this.state.seconds === 0 && this.state.minutes === 0) {
+        this.playAlarm();
+      } // changes color at 0min 59sec:
+      if (this.state.seconds <= 59 && this.state.minutes === 0) {
+        this.setState({
+          alarmColor: { color: warningColor } });
+
+      } else {
+        this.setState({
+          alarmColor: { color: timeLeftColor } });
+
+      }
+    }
+    // starts countdown for break
+    if (this.state.active === true && this.state.label === 'Break') {
+      //countdown of seconds
+      if (this.state.seconds < 60 && this.state.seconds >= 0) {
+        this.setState({
+          seconds: this.state.seconds - 1 });
+
+      } // countdown of minutes:
+      if (this.state.seconds === -1 && this.state.minutes !== 0) {
+        this.setState({
+          minutes: this.state.minutes - 1,
+          seconds: 59 });
+
+      } //switches to break at 0min 0sec:
+      if (this.state.seconds === -1 && this.state.minutes === 0) {
+        this.setState({
+          label: 'Session',
+          minutes: this.state.session,
+          seconds: 0 });
+
+      } //plays alarm at 0min 0sec:
+      if (this.state.seconds === 0 && this.state.minutes === 0) {
+        this.playAlarm();
+      } // changes color at 0min 59sec:
+      if (this.state.seconds <= 59 && this.state.minutes === 0) {
+        this.setState({
+          alarmColor: { color: warningColor } });
+
+      } else {
+        this.setState({
+          alarmColor: { color: timeLeftColor } });
+
+      }
+    }
+  }
+
+  addClick(input) {
+    this.setState(prevState => {
+      var breakLen;
+      var sessionLen;
+      if (input === 'break' && this.state.break < 60) {
+        breakLen = 1;
+        sessionLen = 0;
+      } else if (input === 'session' && this.state.session < 60) {
+        breakLen = 0;
+        sessionLen = 1;
+      } else {
+        breakLen = 0;
+        sessionLen = 0;
+      }
+
+      return {
+        break: prevState.break + breakLen,
+        session: prevState.session + sessionLen,
+        minutes: prevState.session + sessionLen };
+
+
+    });
+
+  }
+
+  subtractClick(input) {
+    this.setState(prevState => {
+      var breakLen;
+      var sessionLen;
+      if (input === 'break' && this.state.break > 1) {
+        breakLen = 1;
+        sessionLen = 0;
+      } else if (input === 'session' && this.state.session > 1) {
+        breakLen = 0;
+        sessionLen = 1;
+      } else {
+        breakLen = 0;
+        sessionLen = 0;
+      }
+
+      return {
+        break: prevState.break - breakLen,
+        session: prevState.session - sessionLen,
+        minutes: prevState.session - sessionLen };
+
+    });
+  }
+
+  resetClock() {
+    this.setState(() => {
+      return {
+        active: false,
+        session: 25,
+        break: 5,
+        minutes: 25,
+        seconds: 0,
+        label: 'Session',
+        alarmColor: { color: timeLeftColor } };
+
+    });
+    let clip = document.getElementById('beep');
+    clip.pause();
+  }
+
+  handleStartStop() {
+    this.setState(() => {
+      return {
+        active: !this.state.active };
+
+    });
+  }
+
+  playAlarm() {
+    let clip = document.getElementById('beep');
+    clip.play();
+    function stopClip() {
+      clip.pause();
+      clip.currentTime = 0;
+    }
+    setTimeout(() => stopClip(), 2900);
+  }
+
+  render() {
+    return (
+      React.createElement("div", null,
+      React.createElement("header", null, "Pomodoro Clock"),
+      React.createElement("div", { id: "clock-container" },
+      React.createElement("div", { id: "break" },
+      React.createElement("h1", { id: "break-label" }, "Break Length"),
+      React.createElement("h2", { id: "break-length" }, this.state.break),
+      React.createElement("button", { id: "break-decrement",
+        onClick: () => this.subtractClick('break') }, "-"),
+      React.createElement("button", { id: "break-increment",
+        onClick: () => this.addClick('break') }, "+")),
+
+      React.createElement("div", { id: "session" },
+      React.createElement("h1", { id: "session-label" }, "Session Length"),
+      React.createElement("h2", { id: "session-length" }, this.state.session),
+      React.createElement("button", { id: "session-decrement",
+        onClick: () => this.subtractClick('session') }, "-"),
+      React.createElement("button", { id: "session-increment",
+        onClick: () => this.addClick('session') }, "+")),
+
+      React.createElement("div", { id: "timer" },
+      React.createElement("div", { id: "timer-wrapper" },
+      React.createElement("h1", { id: "timer-label" }, this.state.label),
+      React.createElement("h2", { id: "time-left", style: this.state.alarmColor },
+      this.state.minutes < 10 ? `0${this.state.minutes}` :
+      this.state.minutes, ":", this.state.seconds < 10 ?
+      `0${this.state.seconds}` : this.state.seconds)),
+
+      React.createElement("button", { id: "start_stop",
+        onClick: this.handleStartStop }, React.createElement("img", { id: "play-pause", src: playPauseIcon })),
+      React.createElement("button", { id: "reset",
+        onClick: this.resetClock }, "reset"),
+      React.createElement("br", null), React.createElement("br", null),
+      React.createElement("audio", {
+        id: "beep",
+        src: url,
+        loop: "loop" }))),
+
+
+
+      React.createElement("footer", null, "freecodecamp.org")));
+
+
+  }}
+
+
+ReactDOM.render(React.createElement(App, null), document.getElementById('root'));

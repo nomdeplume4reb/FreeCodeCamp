@@ -1,0 +1,126 @@
+@font-face {
+  font-family: "Digital";
+  src: url("//db.onlinewebfonts.com/t/8e22783d707ad140bffe18b2a3812529.eot");
+  src: url("//db.onlinewebfonts.com/t/8e22783d707ad140bffe18b2a3812529.eot?#iefix") format("embedded-opentype"), url("//db.onlinewebfonts.com/t/8e22783d707ad140bffe18b2a3812529.woff2") format("woff2"), url("//db.onlinewebfonts.com/t/8e22783d707ad140bffe18b2a3812529.woff") format("woff"), url("//db.onlinewebfonts.com/t/8e22783d707ad140bffe18b2a3812529.ttf") format("truetype"), url("//db.onlinewebfonts.com/t/8e22783d707ad140bffe18b2a3812529.svg#Digital-7") format("svg");
+}
+
+body{
+  margin: 0;
+  background-color: lightcoral;
+  text-align: center;
+}
+
+header {
+  height: 60px;
+  display: flex;
+  margin: 0px 0px 20px 0px;
+  align-items: center;
+  background: white;
+  font-family: 'Raleway', sans-serif;
+  font-size: 40px;
+  color: lightcoral;
+  justify-content: center;
+}
+
+footer {
+  height: 60px;
+  display: flex;
+  margin: 50px 0px 0px 0px;
+  align-items: center;
+  background: white;
+  font-family: 'Raleway', sans-serif;
+  font-size: 15px;
+  color: lightcoral;
+  justify-content: center;
+}
+
+#clock-container {
+  display: grid;
+  rid-template-columns: 100px 100px 100px 100px;
+  grid-template-rows: 175px 225px;
+  grid-gap: 0px;
+  width: 450px;
+  background-color: white;
+  margin: 0 auto;
+  border-radius: 10%;
+}  
+
+#break{
+  grid-column: 1 / span 2;
+  justify-self: center;
+  align-self: center;
+}
+
+#session {
+  grid-column: 3 / span 2;
+  justify-self: center;
+  align-self: center;
+}
+
+#timer{
+  grid-column: 2 / span 2;
+  grid-row: 2 / span 1;
+  justify-self: center;
+  align-self: center;
+}
+
+#break-label, #break-length, #session-label, #session-length {
+    text-align: center;
+    width: auto;
+    height: auto;
+    font-size: 1.5em;
+    font-weight: 500;
+    font-family: 'Raleway', sans-serif;
+    color: lightcoral;
+}
+
+#break-increment, #break-decrement, #session-increment, #session-decrement{
+  height:30px;
+  width: 30px;
+ 
+  text-align: center;
+  color: white;
+  background-color: lightcoral;
+  outline: solid;
+  font-size: 1em;
+  font-family: 'Raleway', sans-serif;
+}
+
+#timer-label {
+    text-align:center;
+    width: auto;
+    height: auto;
+    font-size: 1.5em;
+    font-family: 'Raleway', sans-serif;
+    color: #20B2AA;
+}
+  
+#time-left {
+    text-align:center;
+    height: auto;
+    font-weight: 500;
+    font-size: 40px;
+    font-family: digital;
+    /*color: coral;*/
+  }
+  
+#start_stop, #reset{
+  width: 80px;
+  height:40px;
+  color: white;
+  background-color: lightcoral;
+  outline: solid;
+  font-size: 1em;
+  font-family: 'Raleway', sans-serif;
+  margin: 5px;
+}
+
+#play-pause{
+  width: 25px;
+  height: 15px;
+}
+
+#timer-wrapper{
+  border: 2px dotted lightcoral;
+  border-radius: 10%;
+}
