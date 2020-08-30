@@ -1,0 +1,151 @@
+let url = 'https://raw.githubusercontent.com/freeCodeCamp/ProjectReferenceData/master/GDP-data.json';
+
+let margin = {
+  top: 50,
+  right: 50,
+  bottom: 50,
+  left: 75 },
+width = 1000 - margin.left - margin.right,
+height = 600 - margin.top - margin.bottom;
+
+let svg = d3.select('#dataContainer').
+append('svg').
+attr('width', width + margin.left + margin.right).
+attr('height', height + margin.top + margin.bottom).
+append('g').
+attr('transform',
+'translate (' + margin.left + ',' + margin.top + ')');
+
+let Tooltip = d3.select('body').
+append("div").
+style('width', '175px')
+//.style('position', 'absolute')
+.style("opacity", 0).
+attr("class", "tooltip").
+attr("id", "tooltip").
+style("background-color", "white").
+style("border", "solid").
+style("border-width", "2px").
+style("border-radius", "5px").
+style("padding", "5px");
+
+
+d3.json(url).then(response => {
+
+  //returns the number of observations
+  let count = response.data.map(function (d) {
+    return d[0];
+  });
+  //console.log(count.length)
+  let yearFormat = d3.timeFormat("%Y");
+  let monthFormat = d3.timeFormat('%B');
+
+  var parseDate = d3.timeParse("%Y-%m-%d");
+  response.data.map(function (d) {
+    d[0] = parseDate(d[0]);
+  });
+
+  //console.log(response.data[0])
+
+  //X Axis
+  //scale determines what data will be plotted
+  var xAxis = d3.scaleTime().
+  domain(d3.extent(response.data, function (d) {// timeScale requires d3.extent?
+    return new Date(d[0]);
+  })).
+  range([0, width]);
+
+  svg.append('g').
+  attr("transform", "translate(0," + height + ")").
+  call(d3.axisBottom(xAxis).tickSizeOuter(0)).
+  attr('id', 'x-axis');
+
+  //x axis label
+  svg.append("text").
+  attr("id", "x-label").
+  attr("transform", "translate(0," + height + ")").
+  attr("x", width / 2).
+  attr("y", 40).
+  style("text-anchor", "end").
+  text("Year");
+
+  //add Y Axis
+  let yAxis = d3.scaleLinear().
+  domain([0, 18000]).
+  range([height, 0]);
+
+  svg.append('g').
+  call(d3.axisLeft(yAxis)).
+  attr('id', 'y-axis');
+
+  //y label
+  svg.append('text').
+  attr("id", "y-label").
+  attr("transform", "rotate(-90)").
+  attr("y", 10 - margin.left).
+  attr("x", 0 - height / 2).
+  attr("dy", "1em").
+  style("text-anchor", "middle").
+  text("GDP in $Billions");
+
+  //Bars
+  let barWidth = Math.floor(width / count.length);
+
+  svg.append('g').
+  selectAll("bar").
+  data(response.data).
+  enter().
+  append("rect").
+  attr('class', 'bar').
+  attr("x", function (d) {return xAxis(d[0]);}).
+  attr("y", function (d) {return yAxis(d[1]);}).
+  attr("data-date", function (d, i) {return response.data[i][1];}).
+  attr("data-gdp", function (d, i) {return response.data[i][1];}).
+  attr("width", barWidth).
+  attr("height", function (d) {return height - yAxis(d[1]);}).
+  attr("fill", "#69b3a2").
+  attr('data-date', 'data-gdp')
+  //animate
+  .on("mouseover", handleMouseOver).
+  on("mousemove", handleMouseMove).
+  on("mouseleave", handleMouseLeave);
+
+  function handleMouseOver(d, i) {
+    Tooltip.style("opacity", 1).
+    transition().
+    duration(200).
+    attr('data-date', response.data[i][0]);
+    d3.select(this).
+    style("stroke", "#F08080").
+    style("fill", "#F08080");
+
+  }
+
+  function handleMouseMove(d, i) {
+    //get quarter
+    let Q = monthFormat(d[0]) === "January" ? 'Q1' :
+    monthFormat(d[0]) === "April" ? 'Q2' :
+    monthFormat(d[0]) === "July" ? 'Q3' :
+    'Q4';
+
+    let text = "Date: " + yearFormat(d[0]) + ' ' + Q + ' ' + '<br/>' +
+    "GDP: $" + d[1] + " Billion" + '<br/>';
+    //movement along x coordinate but not y:
+    let xCoord = i * barWidth + 'px';
+    let yCoord = -300 + 'px';
+
+    Tooltip.
+    style('transform', 'translate(' + xCoord + ', ' + yCoord + ')').
+    html(text);
+  }
+
+  function handleMouseLeave(d) {
+    Tooltip.
+    style("opacity", 0);
+    d3.select(this).
+    style("stroke", "none").
+    style("fill", "#69b3a2").
+    style("opacity", 1);
+  }
+
+});

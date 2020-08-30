@@ -1,0 +1,16 @@
+body {
+  background-color: #DCDCDC;  
+}
+
+.container {
+  margin: auto;
+  width: 1000px;
+  padding: 10px;
+  background-color: whitesmoke;
+  border: solid 1px black;
+  box-shadow: 1px 1px 10px;
+}
+
+#title {
+  text-align: center;
+}
