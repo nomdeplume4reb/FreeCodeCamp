@@ -1,0 +1,17 @@
+body {
+  background-color: #808080;  
+}
+
+.container {
+  margin: auto;
+  width: 1100px;
+  padding: 10px;
+  background-color: whitesmoke;
+  border: solid 1px black;
+  box-shadow: 1px 1px 10px;
+  opacity: .8;
+}
+
+#title, #description {
+  text-align: center;
+}
